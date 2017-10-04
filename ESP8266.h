@@ -6,7 +6,7 @@ public:
 
     bool connectWifi(const char ssid[64], const char pass[64]);
     void disconnectWifi();
-    bool startTCPConnection(uint8_t linkId, const char host[64], long port);
+    bool startTCPConnection(uint8_t linkId, const char host[64], unsigned long port);
     bool sendLinkMessage(uint8_t linkId, const char msg[]);
     void closeConnection(uint8_t linkId);
 

@@ -66,14 +66,17 @@ ESP8266::Reply ESP8266::readReply(unsigned long timeout = 5000) {
 
 bool ESP8266::sendLinkMessage(uint8_t linkId, const char msg[]) {
     char param[128];
-    snprintf(param, 128, "%d,%d", linkId, strlen(msg)); //prepare parameters with link id, and chars to write
+    snprintf(param, 128, "%u,%d", linkId, strlen(msg)); //prepare parameters with link id, and chars to write
     sendCommand(SEND_DATA, param); //indicate to ESP you want to send data
+    Serial1.setTimeout(5000);
     if (Serial1.find('>')) { //wait for ESP to give wrap return
         Serial1.write(msg); //write data
+        Serial.print("Sent: ");
+        Serial.println(msg);
     } else {
         return false;
     }
-    return readReply() != OK;
+    return readReply() != ERROR;
 }
 
 bool ESP8266::connectWifi(const char ssid[64], const char pass[64]) {
@@ -88,9 +91,9 @@ void ESP8266::disconnectWifi() {
     readReply();
 }
 
-bool ESP8266::startTCPConnection(uint8_t linkId, const char host[64], long port) {
+bool ESP8266::startTCPConnection(uint8_t linkId, const char host[64], unsigned long port) {
     char param[128];
-    snprintf(param, 128, "%d,\"TCP\",\"%s\",%d", linkId, host, port);
+    snprintf(param, 128, "%u,\"TCP\",\"%s\",%u", linkId, host, port);
     sendCommand(START_CONNECTION, param);
     return readReply(10000) != ERROR;
 }
